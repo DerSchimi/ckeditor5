@@ -71,14 +71,14 @@ export default class ListPropertiesUI extends Plugin {
 		const t = editor.locale.t;
 		const propertiesConfig = editor.config.get( 'list.properties' )!;
 		const normalizedConfig = getNormalizedConfig( propertiesConfig );
-		const stylesListTypes = normalizedConfig.styles.listTypes;
-		const customListTypes = editor.config.get( 'list.customListTypes' ) || [];
+		const stylesListTypes: Array<string> = normalizedConfig.styles.listTypes;
+		const customListTypes: Array<{ label: string; tooltip: string; type: string; icon: string; }> = editor.config.get( 'list.customListTypes' ) || [];
 
 		// Note: When this plugin does not register the "bulletedList" dropdown due to properties configuration,
 		// a simple button will be still registered under the same name by ListUI as a fallback. This should happen
 		// in most editor configuration because the List plugin automatically requires ListUI.
 		if ( stylesListTypes.includes( 'bulleted' ) ) {
-			const styleDefinitions = [
+			const styleDefinitions: Array<{ label: string; tooltip: string; type: string; icon: string; }> = [
 				{
 					label: t( 'Toggle the disc list style' ),
 					tooltip: t( 'Disc' ),
@@ -128,7 +128,7 @@ export default class ListPropertiesUI extends Plugin {
 		// a simple button will be still registered under the same name by ListUI as a fallback. This should happen
 		// in most editor configuration because the List plugin automatically requires ListUI.
 		if ( stylesListTypes.includes( 'numbered' ) || propertiesConfig.startIndex || propertiesConfig.reversed ) {
-			const styleDefinitions = [
+			const styleDefinitions: Array<{ label: string; tooltip: string; type: string; icon: string; }> = [
 				{
 					label: t( 'Toggle the decimal list style' ),
 					tooltip: t( 'Decimal' ),
@@ -226,7 +226,7 @@ function getDropdownViewCreator( {
 	buttonLabel: string;
 	buttonIcon: string;
 	styleGridAriaLabel: string;
-	styleDefinitions: Array<StyleDefinition>;
+	styleDefinitions: Array<{ label: string; tooltip: string; type: string; icon: string; }>;
 } ) {
 	const parentCommand = editor.commands.get( parentCommandName )!;
 
@@ -297,7 +297,7 @@ function getStyleButtonCreator( {
 	const locale = editor.locale;
 	const parentCommand = editor.commands.get( parentCommandName )!;
 
-	return ( { label, type, icon, tooltip }: StyleDefinition ) => {
+	return ( { label, type, icon, tooltip }: { label: string; tooltip: string; type: string; icon: string; } ) => {
 		const button = new ButtonView( locale );
 
 		button.set( { label, icon, tooltip } );
@@ -354,7 +354,7 @@ function createListPropertiesView( {
 	normalizedConfig: Readonly<NormalizedListPropertiesConfig>;
 	dropdownView: DropdownView;
 	parentCommandName: string;
-	styleDefinitions: Array<StyleDefinition>;
+	styleDefinitions: Array<{ label: string; tooltip: string; type: string; icon: string; }>;
 	styleGridAriaLabel: string;
 } ) {
 	const locale = editor.locale;
@@ -447,7 +447,7 @@ function getMenuBarStylesMenuCreator(
 		parentCommandName: 'bulletedList' | 'numberedList';
 		buttonLabel: string;
 		styleGridAriaLabel: string;
-		styleDefinitions: Array<StyleDefinition>;
+		styleDefinitions: Array<{ label: string; tooltip: string; type: string; icon: string; }>;
 	}
 ) {
 	return ( locale: Locale ) => {
@@ -491,7 +491,7 @@ function getMenuBarStylesMenuCreator(
 
 function getStyleTypeSupportChecker( listStyleCommand: LegacyListStyleCommand | ListStyleCommand ) {
 	if ( typeof listStyleCommand.isStyleTypeSupported == 'function' ) {
-		return ( styleDefinition: StyleDefinition ) => listStyleCommand.isStyleTypeSupported( styleDefinition.type );
+		return ( styleDefinition: { label: string; tooltip: string; type: string; icon: string; } ) => listStyleCommand.isStyleTypeSupported( styleDefinition.type );
 	} else {
 		return () => true;
 	}
