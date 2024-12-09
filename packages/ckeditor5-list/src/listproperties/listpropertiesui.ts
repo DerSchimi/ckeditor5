@@ -72,6 +72,7 @@ export default class ListPropertiesUI extends Plugin {
 		const propertiesConfig = editor.config.get( 'list.properties' )!;
 		const normalizedConfig = getNormalizedConfig( propertiesConfig );
 		const stylesListTypes = normalizedConfig.styles.listTypes;
+		const customListTypes = editor.config.get( 'list.customListTypes' ) || [];
 
 		// Note: When this plugin does not register the "bulletedList" dropdown due to properties configuration,
 		// a simple button will be still registered under the same name by ListUI as a fallback. This should happen
@@ -95,7 +96,8 @@ export default class ListPropertiesUI extends Plugin {
 					tooltip: t( 'Square' ),
 					type: 'square',
 					icon: listStyleSquareIcon
-				}
+					},
+					...customListTypes
 			];
 			const buttonLabel = t( 'Bulleted List' );
 			const styleGridAriaLabel = t( 'Bulleted list styles toolbar' );
@@ -162,7 +164,8 @@ export default class ListPropertiesUI extends Plugin {
 					tooltip: t( 'Upper-latin' ),
 					type: 'upper-latin',
 					icon: listStyleUpperLatinIcon
-				}
+					},
+					...customListTypes
 			];
 			const buttonLabel = t( 'Numbered List' );
 			const styleGridAriaLabel = t( 'Numbered list styles toolbar' );

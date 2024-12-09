@@ -130,3 +130,38 @@ Probably the most exciting features are the ones you can develop on top of CKEdi
 We are gradually enhancing the {@link framework/index CKEditor&nbsp;5 Framework documentation} together with the {@link api/index API documentation}, hoping to give you a solid base for {@link tutorials/crash-course/editor creating custom features}.
 
 The official add-ons repository for CKEditor 4 reached an impressive number of over 300 add-ons created and published by the community. Now it is time for you to add your contributions to CKEditor&nbsp;5!
+
+## Custom List Types
+
+The `customListTypes` configuration option allows you to add custom list types to the list properties. This can be useful if you want to extend the list styles available in the editor.
+
+### Example Configuration
+
+```javascript
+ClassicEditor
+	.create( editorElement, {
+		list: {
+			properties: {
+				styles: true,
+				startIndex: true,
+				reversed: true,
+				customListTypes: [
+					{
+						label: 'Custom Style 1',
+						type: 'custom-style-1',
+						icon: '<svg>...</svg>',
+						tooltip: 'Custom Style 1'
+					},
+					{
+						label: 'Custom Style 2',
+						type: 'custom-style-2',
+						icon: '<svg>...</svg>',
+						tooltip: 'Custom Style 2'
+					}
+				]
+			}
+		}
+	} )
+	.then( ... )
+	.catch( ... );
+```
