@@ -109,6 +109,13 @@ export interface ListPropertiesConfig {
 	 * @default false
 	 */
 	reversed?: boolean;
+
+	/**
+	 * When set, the custom list types feature will be enabled. It allows adding custom list types to the list properties.
+	 *
+	 * @default []
+	 */
+	customListTypes?: Array<CustomListTypeConfig>;
 }
 
 export interface ListPropertiesStyleConfig {
@@ -171,3 +178,29 @@ export interface ListPropertiesStyleConfig {
 }
 
 export type ListPropertiesStyleListType = 'numbered' | 'bulleted';
+
+/**
+ * Configuration for custom list types.
+ */
+export interface CustomListTypeConfig {
+
+	/**
+	 * The label of the custom list type.
+	 */
+	label: string;
+
+	/**
+	 * The type of the custom list type.
+	 */
+	type: string;
+
+	/**
+	 * The SVG string of an icon of the custom list type.
+	 */
+	icon: string;
+
+	/**
+	 * The tooltip text of the custom list type.
+	 */
+	tooltip: string;
+}
