@@ -190,6 +190,36 @@ export default class ListPropertiesUI extends Plugin {
 					styleDefinitions
 				} ) );
 			}
+			// Add custom list types to the dropdown and menu bar
+			if ( normalizedConfig.customListTypes ) {
+				for ( const customListType of normalizedConfig.customListTypes ) {
+					const customStyleDefinitions = customListType.styles.map( style => ( {
+						label: t( `Toggle the ${ style } list style` ),
+						tooltip: t( style.charAt( 0 ).toUpperCase() + style.slice( 1 ) ),
+						type: style,
+						icon: customListType.icon
+					} ) );
+
+					editor.ui.componentFactory.add( customListType.commandName, getDropdownViewCreator( {
+						editor,
+						normalizedConfig,
+						parentCommandName: customListType.commandName,
+						buttonLabel: t( customListType.label ),
+						buttonIcon: customListType.icon,
+						styleGridAriaLabel: t( `${ customListType.label } styles toolbar` ),
+						styleDefinitions: customStyleDefinitions
+					} ) );
+
+					editor.ui.componentFactory.add( `menuBar:${ customListType.commandName }`, getMenuBarStylesMenuCreator( {
+						editor,
+						normalizedConfig,
+						parentCommandName: customListType.commandName,
+						buttonLabel: t( customListType.label ),
+						styleGridAriaLabel: t( `${ customListType.label } styles toolbar` ),
+						styleDefinitions: customStyleDefinitions
+					} ) );
+				}
+			}
 		}
 	}
 }
@@ -481,6 +511,44 @@ function getMenuBarStylesMenuCreator(
 		menuView.on( 'execute', () => {
 			editor.editing.view.focus();
 		} );
+
+		// Add custom list types to the menu bar
+		if ( normalizedConfig.customListTypes ) {
+			for ( const customListType of normalizedConfig.customListTypes ) {
+				const customStyleDefinitions = customListType.styles.map( style => ( {
+					label: t( `Toggle the ${ style } list style` ),
+					tooltip: t( style.charAt( 0 ).toUpperCase() + style.slice( 1 ) ),
+					type: style,
+					icon: customListType.icon
+				} ) );
+
+				const customStyleButtonViews = customStyleDefinitions.filter( isStyleTypeSupported ).map( styleButtonCreator );
+
+				const customListPropertiesView = new ListPropertiesView( locale, {
+					styleGridAriaLabel: t( `${ customListType.label } styles toolbar` ),
+					enabledProperties: {
+						...normalizedConfig,
+
+						// Disable list start index and reversed in the menu bar.
+						startIndex: false,
+						reversed: false
+					},
+					styleButtonViews: customStyleButtonViews
+				} );
+
+				customListPropertiesView.delegate( 'execute' ).to( menuView );
+
+				menuView.buttonView.set( {
+					label: t( customListType.label ),
+					icon: customListType.icon
+				} );
+				menuView.panelView.children.add( customListPropertiesView );
+				menuView.bind( 'isEnabled' ).to( listCommand, 'isEnabled' );
+				menuView.on( 'execute', () => {
+					editor.editing.view.focus();
+				} );
+			}
+		}
 
 		return menuView;
 	};

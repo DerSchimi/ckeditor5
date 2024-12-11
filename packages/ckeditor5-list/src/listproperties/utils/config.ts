@@ -21,7 +21,15 @@ import type { ListPropertiesConfig, ListPropertiesStyleListType } from '../../li
  * 		useAttribute: false
  * 	},
  * 	startIndex: true,
- * 	reversed: true
+ * 	reversed: true,
+ * 	customListTypes: [
+ * 		{
+ * 			commandName: 'customListType1',
+ * 			label: 'Custom List Type 1',
+ * 			icon: '<svg>...</svg>',
+ * 			styles: [ 'customStyle1', 'customStyle2' ]
+ * 		}
+ * 	]
  * }
  * ```
  *
@@ -29,12 +37,13 @@ import type { ListPropertiesConfig, ListPropertiesStyleListType } from '../../li
  * @returns An object with normalized list properties options.
  */
 export function getNormalizedConfig( config: ListPropertiesConfig ): NormalizedListPropertiesConfig {
-	const { startIndex, reversed, styles } = config;
+	const { startIndex, reversed, styles, customListTypes } = config;
 
 	return {
 		styles: getNormalizedStylesConfig( styles ),
 		startIndex: startIndex || false,
-		reversed: reversed || false
+		reversed: reversed || false,
+		customListTypes: customListTypes || []
 	};
 }
 
@@ -89,4 +98,10 @@ export type NormalizedListPropertiesConfig = {
 	};
 	startIndex: boolean;
 	reversed: boolean;
+	customListTypes: Array<{
+		commandName: string;
+		label: string;
+		icon: string;
+		styles: Array<string>;
+	}>;
 };

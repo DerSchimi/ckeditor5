@@ -83,7 +83,8 @@ export default class ListPropertiesEditing extends Plugin {
 		editor.config.define( 'list.properties', {
 			styles: true,
 			startIndex: false,
-			reversed: false
+			reversed: false,
+			customListTypes: []
 		} );
 	}
 
@@ -409,6 +410,60 @@ function createAttributeStrategies( enabledProperties: ListPropertiesConfig ) {
 				return startAttributeValue >= 0 ? startAttributeValue : 1;
 			}
 		} );
+	}
+
+	if ( enabledProperties.customListTypes ) {
+		for ( const customListType of enabledProperties.customListTypes ) {
+			strategies.push( {
+				attributeName: customListType.commandName,
+				defaultValue: DEFAULT_LIST_TYPE,
+				viewConsumables: { styles: 'list-style-type' },
+
+				addCommand( editor ) {
+					editor.commands.add( customListType.commandName, new ListStyleCommand( editor, DEFAULT_LIST_TYPE, customListType.styles ) );
+				},
+
+				appliesToListItem( item ) {
+					return item.getAttribute( 'listType' ) == customListType.commandName;
+				},
+
+				hasValidAttribute( item ) {
+					if ( !this.appliesToListItem( item ) ) {
+						return !item.hasAttribute( customListType.commandName );
+					}
+
+					if ( !item.hasAttribute( customListType.commandName ) ) {
+						return false;
+					}
+
+					const value = item.getAttribute( customListType.commandName );
+
+					if ( value == DEFAULT_LIST_TYPE ) {
+						return true;
+					}
+
+					return customListType.styles.includes( value as string );
+				},
+
+				setAttributeOnDowncast( writer, listStyle, element ) {
+					if ( listStyle && listStyle !== DEFAULT_LIST_TYPE ) {
+						writer.setStyle( 'list-style-type', listStyle as string, element );
+					} else {
+						writer.removeStyle( 'list-style-type', element );
+					}
+				},
+
+				getAttributeOnUpcast( listParent ) {
+					const style = listParent.getStyle( 'list-style-type' );
+
+					if ( style ) {
+						return style;
+					}
+
+					return DEFAULT_LIST_TYPE;
+				}
+			} );
+		}
 	}
 
 	return strategies;
