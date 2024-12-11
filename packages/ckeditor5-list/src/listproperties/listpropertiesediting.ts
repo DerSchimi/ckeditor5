@@ -32,8 +32,7 @@ import { listPropertiesUpcastConverter } from './converters.js';
 import {
 	getAllSupportedStyleTypes,
 	getListTypeFromListStyleType,
-	getListStyleTypeFromTypeAttribute,
-	getTypeAttributeFromListStyleType
+	getListStyleTypeFromTypeAttribute
 } from './utils/style.js';
 import ListPropertiesUtils from './listpropertiesutils.js';
 import {
