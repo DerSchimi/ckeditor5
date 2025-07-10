@@ -1,0 +1,1 @@
+{"root":["./src/clipboard.ts","./src/core.ts","./src/engine.ts","./src/enter.ts","./src/icons.ts","./src/index.ts","./src/paragraph.ts","./src/select-all.ts","./src/typing.ts","./src/ui.ts","./src/undo.ts","./src/upload.ts","./src/utils.ts","./src/watchdog.ts","./src/widget.ts","./typings/types.d.ts"],"errors":true,"version":"5.8.3"}

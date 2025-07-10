@@ -345,5 +345,95 @@ describe( 'ListProperties - utils - config', () => {
 				reversed: false
 			} );
 		} );
+
+		it( 'should handle new format custom styleDefinitions configuration (single array)', () => {
+			const config = {
+				styles: {
+					styleDefinitions: [
+						{
+							label: 'Toggle the check list style',
+							tooltip: 'Check',
+							type: 'check',
+							icon: '<svg>custom icon</svg>',
+							listType: 'bulleted'
+						},
+						{
+							label: 'Custom decimal style',
+							tooltip: 'Custom decimal',
+							type: 'decimal',
+							icon: '<svg>custom decimal icon</svg>',
+							listType: 'numbered'
+						}
+					]
+				}
+			};
+
+			expect( getNormalizedConfig( config ) ).to.deep.equal( {
+				styles: {
+					listTypes: [ 'bulleted', 'numbered' ],
+					useAttribute: false,
+					styleDefinitions: [
+						{
+							label: 'Toggle the check list style',
+							tooltip: 'Check',
+							type: 'check',
+							icon: '<svg>custom icon</svg>',
+							listType: 'bulleted'
+						},
+						{
+							label: 'Custom decimal style',
+							tooltip: 'Custom decimal',
+							type: 'decimal',
+							icon: '<svg>custom decimal icon</svg>',
+							listType: 'numbered'
+						}
+					]
+				},
+				startIndex: false,
+				reversed: false
+			} );
+		} );
+
+		it( 'should handle combined new format styleDefinitions and listStyleTypes configuration', () => {
+			const config = {
+				styles: {
+					listStyleTypes: {
+						bulleted: [ 'disc', 'check' ],
+						numbered: [ 'decimal' ]
+					},
+					styleDefinitions: [
+						{
+							label: 'Custom check style',
+							tooltip: 'Check',
+							type: 'check',
+							icon: '<svg>check icon</svg>',
+							listType: 'bulleted'
+						}
+					]
+				}
+			};
+
+			expect( getNormalizedConfig( config ) ).to.deep.equal( {
+				styles: {
+					listTypes: [ 'bulleted', 'numbered' ],
+					useAttribute: false,
+					listStyleTypes: {
+						bulleted: [ 'disc', 'check' ],
+						numbered: [ 'decimal' ]
+					},
+					styleDefinitions: [
+						{
+							label: 'Custom check style',
+							tooltip: 'Check',
+							type: 'check',
+							icon: '<svg>check icon</svg>',
+							listType: 'bulleted'
+						}
+					]
+				},
+				startIndex: false,
+				reversed: false
+			} );
+		} );
 	} );
 } );

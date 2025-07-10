@@ -8,7 +8,13 @@
  */
 
 import { toArray } from 'ckeditor5/src/utils.js';
-import type { ListPropertiesConfig, ListPropertiesStyleListType, ListStyleDefinitionsConfig } from '../../listconfig.js';
+import type { 
+	ListPropertiesConfig, 
+	ListPropertiesStyleListType, 
+	ListStyleDefinitionsConfig,
+	CustomStyleDefinitionsConfig,
+	CustomStyleDefinition
+} from '../../listconfig.js';
 
 /**
  * Normalizes {@link module:list/listconfig~ListPropertiesConfig} in the configuration of the list properties feature.
@@ -100,7 +106,7 @@ export type NormalizedListPropertiesConfig = {
 			numbered?: Array<string>;
 			bulleted?: Array<string>;
 		};
-		styleDefinitions?: ListStyleDefinitionsConfig;
+		styleDefinitions?: ListStyleDefinitionsConfig | CustomStyleDefinitionsConfig;
 		useAttribute: boolean;
 	};
 	startIndex: boolean;

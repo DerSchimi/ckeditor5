@@ -171,5 +171,74 @@ describe( 'ListProperties - utils - style', () => {
 			// Note: style1 may still be included due to the way imports work in tests,
 			// but the important thing is that style2 is now available
 		} );
+
+		it( 'should register custom styles using new single array format', async () => {
+			const { registerCustomListStyles, getAllSupportedStyleTypes, getListTypeFromListStyleType } = 
+				await import( '../../../src/listproperties/utils/style.js' );
+
+			const customStyles = [
+				{
+					label: 'Check list style',
+					tooltip: 'Check',
+					type: 'check',
+					icon: '<svg>check icon</svg>',
+					listType: 'bulleted'
+				},
+				{
+					label: 'Custom decimal style',
+					tooltip: 'Custom decimal',
+					type: 'custom-decimal',
+					icon: '<svg>custom decimal icon</svg>',
+					listType: 'numbered'
+				}
+			];
+
+			registerCustomListStyles( customStyles );
+
+			// Check that both custom styles are registered
+			expect( getAllSupportedStyleTypes() ).to.include( 'check' );
+			expect( getAllSupportedStyleTypes() ).to.include( 'custom-decimal' );
+			expect( getListTypeFromListStyleType( 'check' ) ).to.equal( 'bulleted' );
+			expect( getListTypeFromListStyleType( 'custom-decimal' ) ).to.equal( 'numbered' );
+		} );
+
+		it( 'should handle mixed listType values in new array format', async () => {
+			const { registerCustomListStyles, getAllSupportedStyleTypes, getListTypeFromListStyleType } = 
+				await import( '../../../src/listproperties/utils/style.js' );
+
+			const customStyles = [
+				{
+					label: 'Check style',
+					tooltip: 'Check',
+					type: 'check',
+					icon: '<svg>check</svg>',
+					listType: 'bulleted'
+				},
+				{
+					label: 'Star style',
+					tooltip: 'Star', 
+					type: 'star',
+					icon: '<svg>star</svg>',
+					listType: 'bulleted'
+				},
+				{
+					label: 'Roman custom style',
+					tooltip: 'Roman Custom',
+					type: 'roman-custom',
+					icon: '<svg>roman</svg>',
+					listType: 'numbered'
+				}
+			];
+
+			registerCustomListStyles( customStyles );
+
+			// Check that all custom styles are registered with correct types
+			expect( getAllSupportedStyleTypes() ).to.include( 'check' );
+			expect( getAllSupportedStyleTypes() ).to.include( 'star' );
+			expect( getAllSupportedStyleTypes() ).to.include( 'roman-custom' );
+			expect( getListTypeFromListStyleType( 'check' ) ).to.equal( 'bulleted' );
+			expect( getListTypeFromListStyleType( 'star' ) ).to.equal( 'bulleted' );
+			expect( getListTypeFromListStyleType( 'roman-custom' ) ).to.equal( 'numbered' );
+		} );
 	} );
 } );

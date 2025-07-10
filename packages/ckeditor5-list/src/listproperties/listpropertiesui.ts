@@ -42,7 +42,11 @@ import { type LegacyListReversedCommand } from '../legacylistproperties/legacyli
 import { type ListReversedCommand } from '../listproperties/listreversedcommand.js';
 
 import { getNormalizedConfig, type NormalizedListPropertiesConfig } from './utils/config.js';
-import { type ListPropertiesStyleListType, type ListStyleDefinition } from '../listconfig.js';
+import { 
+	type ListPropertiesStyleListType, 
+	type ListStyleDefinition,
+	type CustomStyleDefinition 
+} from '../listconfig.js';
 import { registerCustomListStyles } from './utils/style.js';
 
 import '../../theme/liststyles.css';
@@ -470,6 +474,7 @@ function getStyleTypeSupportChecker( listStyleCommand: LegacyListStyleCommand | 
 /**
  * Gets style definitions for a specific list type based on configuration.
  * Returns custom definitions if provided, otherwise falls back to default definitions.
+ * Supports both legacy categorized format and new single array format.
  */
 function getStyleDefinitions( 
 	normalizedConfig: Readonly<NormalizedListPropertiesConfig>,
@@ -478,14 +483,29 @@ function getStyleDefinitions(
 ): Array<StyleDefinition> {
 	// If custom style definitions are provided, use them
 	if ( normalizedConfig.styles.styleDefinitions ) {
-		const customDefinitions = normalizedConfig.styles.styleDefinitions[ listType ];
-		if ( customDefinitions ) {
-			return customDefinitions.map( def => ({
+		const styleDefinitions = normalizedConfig.styles.styleDefinitions;
+		
+		// Handle new format (single array with listType property)
+		if ( Array.isArray( styleDefinitions ) ) {
+			const filteredDefinitions = styleDefinitions.filter( def => def.listType === listType );
+			return filteredDefinitions.map( def => ({
 				label: def.label,
 				tooltip: def.tooltip,
 				type: def.type,
 				icon: def.icon
 			}) );
+		}
+		// Handle legacy format (categorized by numbered/bulleted)
+		else {
+			const customDefinitions = styleDefinitions[ listType ];
+			if ( customDefinitions ) {
+				return customDefinitions.map( def => ({
+					label: def.label,
+					tooltip: def.tooltip,
+					type: def.type,
+					icon: def.icon
+				}) );
+			}
 		}
 	}
 

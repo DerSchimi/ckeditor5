@@ -7,7 +7,11 @@
 * @module list/listproperties/utils/style
 */
 
-import type { ListStyleDefinitionsConfig } from '../../listconfig.js';
+import type { 
+	ListStyleDefinitionsConfig, 
+	CustomStyleDefinitionsConfig,
+	CustomStyleDefinition 
+} from '../../listconfig.js';
 
 const LIST_STYLE_TO_LIST_TYPE: Record<string, 'bulleted' | 'numbered' | undefined> = {};
 const LIST_STYLE_TO_TYPE_ATTRIBUTE: Record<string, string | null | undefined> = {};
@@ -61,30 +65,44 @@ export function getAllSupportedStyleTypes(): Array<string> {
 
 /**
  * Registers custom list styles from configuration.
+ * Supports both legacy categorized format and new single array format.
  *
  * @internal
  */
-export function registerCustomListStyles( customStyles: ListStyleDefinitionsConfig ): void {
+export function registerCustomListStyles( customStyles: ListStyleDefinitionsConfig | CustomStyleDefinitionsConfig ): void {
 	// Clear existing custom styles
 	CUSTOM_LIST_STYLE_TYPES.length = 0;
 
-	if ( customStyles.bulleted ) {
-		for ( const styleDefinition of customStyles.bulleted ) {
+	// Handle new format (single array with listType property)
+	if ( Array.isArray( customStyles ) ) {
+		for ( const styleDefinition of customStyles ) {
 			CUSTOM_LIST_STYLE_TYPES.push( {
 				listStyle: styleDefinition.type,
 				typeAttribute: styleDefinition.type,
-				listType: 'bulleted'
+				listType: styleDefinition.listType
 			} );
 		}
-	}
+	} 
+	// Handle legacy format (categorized by numbered/bulleted)
+	else {
+		if ( customStyles.bulleted ) {
+			for ( const styleDefinition of customStyles.bulleted ) {
+				CUSTOM_LIST_STYLE_TYPES.push( {
+					listStyle: styleDefinition.type,
+					typeAttribute: styleDefinition.type,
+					listType: 'bulleted'
+				} );
+			}
+		}
 
-	if ( customStyles.numbered ) {
-		for ( const styleDefinition of customStyles.numbered ) {
-			CUSTOM_LIST_STYLE_TYPES.push( {
-				listStyle: styleDefinition.type,
-				typeAttribute: styleDefinition.type,
-				listType: 'numbered'
-			} );
+		if ( customStyles.numbered ) {
+			for ( const styleDefinition of customStyles.numbered ) {
+				CUSTOM_LIST_STYLE_TYPES.push( {
+					listStyle: styleDefinition.type,
+					typeAttribute: styleDefinition.type,
+					listType: 'numbered'
+				} );
+			}
 		}
 	}
 
