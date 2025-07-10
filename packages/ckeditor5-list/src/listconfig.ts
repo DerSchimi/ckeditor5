@@ -232,6 +232,47 @@ export interface ListPropertiesStyleConfig {
 	 * }`
 	 */
 	listStyleTypes?: ListStyleTypesConfig;
+
+	/**
+	 * Defines custom style definitions for list items. This allows configuring custom icons,
+	 * labels, and types for list styles.
+	 *
+	 * ```ts
+	 * {
+	 *   list: {
+	 *     properties: {
+	 *       styles: {
+	 *         styleDefinitions: {
+	 *           numbered: [
+	 *             {
+	 *               label: 'Custom decimal style',
+	 *               tooltip: 'Custom decimal',
+	 *               type: 'decimal',
+	 *               icon: '<svg>...</svg>'
+	 *             }
+	 *           ],
+	 *           bulleted: [
+	 *             {
+	 *               label: 'Check list style',
+	 *               tooltip: 'Check',
+	 *               type: 'check',
+	 *               icon: '<svg>...</svg>'
+	 *             }
+	 *           ]
+	 *         }
+	 *       }
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 *
+	 * When `styleDefinitions` are provided, they will override the default style definitions.
+	 * Each style definition must include label, tooltip, type, and icon properties.
+	 *
+	 * **Note**: This configuration works only with
+	 * {@link module:list/listproperties~ListProperties list properties}.
+	 */
+	styleDefinitions?: ListStyleDefinitionsConfig;
 }
 
 export interface ListStyleTypesConfig {
@@ -253,3 +294,36 @@ export type BulletedListStyleType =
 	| 'disc'
 	| 'circle'
 	| 'square';
+
+/**
+ * Configuration for custom style definitions.
+ */
+export interface ListStyleDefinitionsConfig {
+	numbered?: Array<ListStyleDefinition>;
+	bulleted?: Array<ListStyleDefinition>;
+}
+
+/**
+ * Definition of a custom list style.
+ */
+export interface ListStyleDefinition {
+	/**
+	 * The label of the style button.
+	 */
+	label: string;
+
+	/**
+	 * The tooltip text of the button.
+	 */
+	tooltip: string;
+
+	/**
+	 * The type identifier of the style.
+	 */
+	type: string;
+
+	/**
+	 * The SVG string icon for the style button.
+	 */
+	icon: string;
+}
