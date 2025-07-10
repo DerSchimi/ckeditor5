@@ -7,6 +7,12 @@
 * @module list/listproperties/utils/style
 */
 
+import type { 
+	ListStyleDefinitionsConfig, 
+	CustomStyleDefinitionsConfig,
+	CustomStyleDefinition 
+} from '../../listconfig.js';
+
 const LIST_STYLE_TO_LIST_TYPE: Record<string, 'bulleted' | 'numbered' | undefined> = {};
 const LIST_STYLE_TO_TYPE_ATTRIBUTE: Record<string, string | null | undefined> = {};
 const TYPE_ATTRIBUTE_TO_LIST_STYLE: Record<string, string | undefined> = {};
@@ -25,6 +31,9 @@ const LIST_STYLE_TYPES: Array<{ listStyle: string; typeAttribute: string | null;
 	{ listStyle: 'upper-latin', typeAttribute: 'A', listType: 'numbered' }
 ];
 
+// Custom styles registry for additional styles defined in configuration
+const CUSTOM_LIST_STYLE_TYPES: Array<{ listStyle: string; typeAttribute: string | null; listType: 'bulleted' | 'numbered' }> = [];
+
 for ( const { listStyle, typeAttribute, listType } of LIST_STYLE_TYPES ) {
 	LIST_STYLE_TO_LIST_TYPE[ listStyle ] = listType;
 	LIST_STYLE_TO_TYPE_ATTRIBUTE[ listStyle ] = typeAttribute;
@@ -34,13 +43,71 @@ for ( const { listStyle, typeAttribute, listType } of LIST_STYLE_TYPES ) {
 	}
 }
 
+function updateMappingsWithCustomStyles() {
+	for ( const { listStyle, typeAttribute, listType } of CUSTOM_LIST_STYLE_TYPES ) {
+		LIST_STYLE_TO_LIST_TYPE[ listStyle ] = listType;
+		LIST_STYLE_TO_TYPE_ATTRIBUTE[ listStyle ] = typeAttribute;
+
+		if ( typeAttribute ) {
+			TYPE_ATTRIBUTE_TO_LIST_STYLE[ typeAttribute ] = listStyle;
+		}
+	}
+}
+
 /**
  * Gets all the style types supported by given list type.
  *
  * @internal
  */
 export function getAllSupportedStyleTypes(): Array<string> {
-	return LIST_STYLE_TYPES.map( x => x.listStyle );
+	return [ ...LIST_STYLE_TYPES, ...CUSTOM_LIST_STYLE_TYPES ].map( x => x.listStyle );
+}
+
+/**
+ * Registers custom list styles from configuration.
+ * Supports both legacy categorized format and new single array format.
+ *
+ * @internal
+ */
+export function registerCustomListStyles( customStyles: ListStyleDefinitionsConfig | CustomStyleDefinitionsConfig ): void {
+	// Clear existing custom styles
+	CUSTOM_LIST_STYLE_TYPES.length = 0;
+
+	// Handle new format (single array with listType property)
+	if ( Array.isArray( customStyles ) ) {
+		for ( const styleDefinition of customStyles ) {
+			CUSTOM_LIST_STYLE_TYPES.push( {
+				listStyle: styleDefinition.type,
+				typeAttribute: styleDefinition.type,
+				listType: styleDefinition.listType
+			} );
+		}
+	} 
+	// Handle legacy format (categorized by numbered/bulleted)
+	else {
+		if ( customStyles.bulleted ) {
+			for ( const styleDefinition of customStyles.bulleted ) {
+				CUSTOM_LIST_STYLE_TYPES.push( {
+					listStyle: styleDefinition.type,
+					typeAttribute: styleDefinition.type,
+					listType: 'bulleted'
+				} );
+			}
+		}
+
+		if ( customStyles.numbered ) {
+			for ( const styleDefinition of customStyles.numbered ) {
+				CUSTOM_LIST_STYLE_TYPES.push( {
+					listStyle: styleDefinition.type,
+					typeAttribute: styleDefinition.type,
+					listType: 'numbered'
+				} );
+			}
+		}
+	}
+
+	// Update mappings with the new custom styles
+	updateMappingsWithCustomStyles();
 }
 
 /**

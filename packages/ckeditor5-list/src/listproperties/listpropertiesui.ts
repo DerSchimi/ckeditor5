@@ -42,7 +42,12 @@ import { type LegacyListReversedCommand } from '../legacylistproperties/legacyli
 import { type ListReversedCommand } from '../listproperties/listreversedcommand.js';
 
 import { getNormalizedConfig, type NormalizedListPropertiesConfig } from './utils/config.js';
-import { type ListPropertiesStyleListType } from '../listconfig.js';
+import { 
+	type ListPropertiesStyleListType, 
+	type ListStyleDefinition,
+	type CustomStyleDefinition 
+} from '../listconfig.js';
+import { registerCustomListStyles } from './utils/style.js';
 
 import '../../theme/liststyles.css';
 
@@ -75,30 +80,16 @@ export class ListPropertiesUI extends Plugin {
 		const normalizedConfig = getNormalizedConfig( propertiesConfig );
 		const stylesListTypes = normalizedConfig.styles.listTypes;
 
+		// Register custom styles if provided
+		if ( normalizedConfig.styles.styleDefinitions ) {
+			registerCustomListStyles( normalizedConfig.styles.styleDefinitions );
+		}
+
 		// Note: When this plugin does not register the "bulletedList" dropdown due to properties configuration,
 		// a simple button will be still registered under the same name by ListUI as a fallback. This should happen
 		// in most editor configuration because the List plugin automatically requires ListUI.
 		if ( stylesListTypes.includes( 'bulleted' ) ) {
-			const styleDefinitions = [
-				{
-					label: t( 'Toggle the disc list style' ),
-					tooltip: t( 'Disc' ),
-					type: 'disc',
-					icon: IconListStyleDisc
-				},
-				{
-					label: t( 'Toggle the circle list style' ),
-					tooltip: t( 'Circle' ),
-					type: 'circle',
-					icon: IconListStyleCircle
-				},
-				{
-					label: t( 'Toggle the square list style' ),
-					tooltip: t( 'Square' ),
-					type: 'square',
-					icon: IconListStyleSquare
-				}
-			];
+			const styleDefinitions = getStyleDefinitions( normalizedConfig, 'bulleted', t );
 			const buttonLabel = t( 'Bulleted List' );
 			const styleGridAriaLabel = t( 'Bulleted list styles toolbar' );
 			const commandName = 'bulletedList';
@@ -128,44 +119,7 @@ export class ListPropertiesUI extends Plugin {
 		// a simple button will be still registered under the same name by ListUI as a fallback. This should happen
 		// in most editor configuration because the List plugin automatically requires ListUI.
 		if ( stylesListTypes.includes( 'numbered' ) || propertiesConfig.startIndex || propertiesConfig.reversed ) {
-			const styleDefinitions = [
-				{
-					label: t( 'Toggle the decimal list style' ),
-					tooltip: t( 'Decimal' ),
-					type: 'decimal',
-					icon: IconListStyleDecimal
-				},
-				{
-					label: t( 'Toggle the decimal with leading zero list style' ),
-					tooltip: t( 'Decimal with leading zero' ),
-					type: 'decimal-leading-zero',
-					icon: IconListStyleDecimalLeadingZero
-				},
-				{
-					label: t( 'Toggle the lower–roman list style' ),
-					tooltip: t( 'Lower–roman' ),
-					type: 'lower-roman',
-					icon: IconListStyleLowerRoman
-				},
-				{
-					label: t( 'Toggle the upper–roman list style' ),
-					tooltip: t( 'Upper-roman' ),
-					type: 'upper-roman',
-					icon: IconListStyleUpperRoman
-				},
-				{
-					label: t( 'Toggle the lower–latin list style' ),
-					tooltip: t( 'Lower-latin' ),
-					type: 'lower-latin',
-					icon: IconListStyleLowerLatin
-				},
-				{
-					label: t( 'Toggle the upper–latin list style' ),
-					tooltip: t( 'Upper-latin' ),
-					type: 'upper-latin',
-					icon: IconListStyleUpperLatin
-				}
-			];
+			const styleDefinitions = getStyleDefinitions( normalizedConfig, 'numbered', t );
 			const buttonLabel = t( 'Numbered List' );
 			const styleGridAriaLabel = t( 'Numbered list styles toolbar' );
 			const commandName = 'numberedList';
@@ -514,6 +468,108 @@ function getStyleTypeSupportChecker( listStyleCommand: LegacyListStyleCommand | 
 		return ( styleDefinition: StyleDefinition ) => listStyleCommand.isStyleTypeSupported( styleDefinition.type );
 	} else {
 		return () => true;
+	}
+}
+
+/**
+ * Gets style definitions for a specific list type based on configuration.
+ * Returns custom definitions if provided, otherwise falls back to default definitions.
+ * Supports both legacy categorized format and new single array format.
+ */
+function getStyleDefinitions( 
+	normalizedConfig: Readonly<NormalizedListPropertiesConfig>,
+	listType: 'bulleted' | 'numbered',
+	t: ( message: string ) => string
+): Array<StyleDefinition> {
+	// If custom style definitions are provided, use them
+	if ( normalizedConfig.styles.styleDefinitions ) {
+		const styleDefinitions = normalizedConfig.styles.styleDefinitions;
+		
+		// Handle new format (single array with listType property)
+		if ( Array.isArray( styleDefinitions ) ) {
+			const filteredDefinitions = styleDefinitions.filter( def => def.listType === listType );
+			return filteredDefinitions.map( def => ({
+				label: def.label,
+				tooltip: def.tooltip,
+				type: def.type,
+				icon: def.icon
+			}) );
+		}
+		// Handle legacy format (categorized by numbered/bulleted)
+		else {
+			const customDefinitions = styleDefinitions[ listType ];
+			if ( customDefinitions ) {
+				return customDefinitions.map( def => ({
+					label: def.label,
+					tooltip: def.tooltip,
+					type: def.type,
+					icon: def.icon
+				}) );
+			}
+		}
+	}
+
+	// Otherwise, use default definitions
+	if ( listType === 'bulleted' ) {
+		return [
+			{
+				label: t( 'Toggle the disc list style' ),
+				tooltip: t( 'Disc' ),
+				type: 'disc',
+				icon: IconListStyleDisc
+			},
+			{
+				label: t( 'Toggle the circle list style' ),
+				tooltip: t( 'Circle' ),
+				type: 'circle',
+				icon: IconListStyleCircle
+			},
+			{
+				label: t( 'Toggle the square list style' ),
+				tooltip: t( 'Square' ),
+				type: 'square',
+				icon: IconListStyleSquare
+			}
+		];
+	} else {
+		return [
+			{
+				label: t( 'Toggle the decimal list style' ),
+				tooltip: t( 'Decimal' ),
+				type: 'decimal',
+				icon: IconListStyleDecimal
+			},
+			{
+				label: t( 'Toggle the decimal with leading zero list style' ),
+				tooltip: t( 'Decimal with leading zero' ),
+				type: 'decimal-leading-zero',
+				icon: IconListStyleDecimalLeadingZero
+			},
+			{
+				label: t( 'Toggle the lower–roman list style' ),
+				tooltip: t( 'Lower–roman' ),
+				type: 'lower-roman',
+				icon: IconListStyleLowerRoman
+			},
+			{
+				label: t( 'Toggle the upper–roman list style' ),
+				tooltip: t( 'Upper-roman' ),
+				type: 'upper-roman',
+				icon: IconListStyleUpperRoman
+			},
+			{
+				label: t( 'Toggle the lower–latin list style' ),
+				tooltip: t( 'Lower-latin' ),
+				type: 'lower-latin',
+				icon: IconListStyleLowerLatin
+			},
+			{
+				label: t( 'Toggle the upper–latin list style' ),
+				tooltip: t( 'Upper-latin' ),
+				type: 'upper-latin',
+				icon: IconListStyleUpperLatin
+			}
+		];
 	}
 }
 
