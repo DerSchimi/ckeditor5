@@ -72,9 +72,9 @@ describe( 'ListPropertiesEditing', () => {
 			return editor.destroy();
 		} );
 
-		describe( 'command', () => {
-			it( 'should register `listStyle` command with support for all style types', () => {
-				const command = editor.commands.get( 'listStyle' );
+                describe( 'command', () => {
+                        it( 'should register `listStyle` command with support for all style types', () => {
+                                const command = editor.commands.get( 'listStyle' );
 
 				expect( command.isStyleTypeSupported( 'disc' ) ).to.be.true;
 				expect( command.isStyleTypeSupported( 'circle' ) ).to.be.true;
@@ -86,9 +86,31 @@ describe( 'ListPropertiesEditing', () => {
 				expect( command.isStyleTypeSupported( 'lower-alpha' ) ).to.be.true;
 				expect( command.isStyleTypeSupported( 'upper-alpha' ) ).to.be.true;
 				expect( command.isStyleTypeSupported( 'lower-latin' ) ).to.be.true;
-				expect( command.isStyleTypeSupported( 'upper-latin' ) ).to.be.true;
-			} );
-		} );
+                                expect( command.isStyleTypeSupported( 'upper-latin' ) ).to.be.true;
+                        } );
+
+                        it( 'should respect the styleTypes configuration', async () => {
+                                const customEditor = await VirtualTestEditor.create( {
+                                        plugins: [ Paragraph, ListPropertiesEditing, UndoEditing ],
+                                        list: {
+                                                properties: {
+                                                        styles: { styleTypes: [ 'disc', 'decimal' ] },
+                                                        startIndex: false,
+                                                        reversed: false
+                                                }
+                                        }
+                                } );
+
+                                const command = customEditor.commands.get( 'listStyle' );
+
+                                expect( command.isStyleTypeSupported( 'disc' ) ).to.be.true;
+                                expect( command.isStyleTypeSupported( 'decimal' ) ).to.be.true;
+                                expect( command.isStyleTypeSupported( 'circle' ) ).to.be.false;
+                                expect( command.isStyleTypeSupported( 'lower-roman' ) ).to.be.false;
+
+                                await customEditor.destroy();
+                        } );
+                } );
 
 		describe( 'schema rules', () => {
 			it( 'should allow set `listStyle` on the `paragraph`', () => {

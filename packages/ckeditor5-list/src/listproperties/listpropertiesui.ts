@@ -375,16 +375,20 @@ function createListPropertiesView( {
 			listStyleCommand
 		} );
 
-		const configuredListStylesTypes = normalizedConfig.styles.listStyleTypes;
-		let filteredDefinitions = styleDefinitions;
+                const configuredListStylesTypes = normalizedConfig.styles.listStyleTypes;
+                const flatStyleTypes = normalizedConfig.styles.styleTypes;
+                let filteredDefinitions = styleDefinitions;
 
-		if ( configuredListStylesTypes ) {
-			const allowedTypes = configuredListStylesTypes[ listType ];
+                if ( configuredListStylesTypes ) {
+                        const allowedTypes = configuredListStylesTypes[ listType ];
 
-			if ( allowedTypes ) {
-				filteredDefinitions = styleDefinitions.filter( def => allowedTypes.includes( def.type ) );
-			}
-		}
+                        if ( allowedTypes ) {
+                                filteredDefinitions = styleDefinitions.filter( def => allowedTypes.includes( def.type ) );
+                        }
+                }
+                else if ( flatStyleTypes ) {
+                        filteredDefinitions = styleDefinitions.filter( def => flatStyleTypes.includes( def.type ) );
+                }
 
 		const isStyleTypeSupported = getStyleTypeSupportChecker( listStyleCommand );
 		styleButtonViews = filteredDefinitions
@@ -468,17 +472,21 @@ function getMenuBarStylesMenuCreator(
 			listStyleCommand
 		} );
 
-		const configuredListStylesTypes = normalizedConfig.styles.listStyleTypes;
-		let filteredDefinitions = styleDefinitions;
+                const configuredListStylesTypes = normalizedConfig.styles.listStyleTypes;
+                const flatStyleTypes = normalizedConfig.styles.styleTypes;
+                let filteredDefinitions = styleDefinitions;
 
-		if ( configuredListStylesTypes ) {
-			const listType = listCommand.type as 'numbered' | 'bulleted';
-			const allowedTypes = configuredListStylesTypes[ listType ];
+                if ( configuredListStylesTypes ) {
+                        const listType = listCommand.type as 'numbered' | 'bulleted';
+                        const allowedTypes = configuredListStylesTypes[ listType ];
 
-			if ( allowedTypes ) {
-				filteredDefinitions = styleDefinitions.filter( def => allowedTypes.includes( def.type ) );
-			}
-		}
+                        if ( allowedTypes ) {
+                                filteredDefinitions = styleDefinitions.filter( def => allowedTypes.includes( def.type ) );
+                        }
+                }
+                else if ( flatStyleTypes ) {
+                        filteredDefinitions = styleDefinitions.filter( def => flatStyleTypes.includes( def.type ) );
+                }
 
 		const styleButtonViews = filteredDefinitions.filter( isStyleTypeSupported ).map( styleButtonCreator );
 		const listPropertiesView = new ListPropertiesView( locale, {

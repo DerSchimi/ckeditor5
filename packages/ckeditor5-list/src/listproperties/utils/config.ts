@@ -54,10 +54,10 @@ export function getNormalizedConfig( config: ListPropertiesConfig ): NormalizedL
  * @returns An object with normalized list properties styles.
  */
 function getNormalizedStylesConfig( styles: ListPropertiesConfig[ 'styles' ] ): NormalizedListPropertiesConfig[ 'styles' ] {
-	const normalizedConfig: NormalizedListPropertiesConfig[ 'styles' ] = {
-		listTypes: [ 'bulleted', 'numbered' ],
-		useAttribute: false
-	};
+        const normalizedConfig: NormalizedListPropertiesConfig[ 'styles' ] = {
+                listTypes: [ 'bulleted', 'numbered' ],
+                useAttribute: false
+        };
 
 	if ( styles === true ) {
 		return normalizedConfig;
@@ -69,17 +69,20 @@ function getNormalizedStylesConfig( styles: ListPropertiesConfig[ 'styles' ] ): 
 	else if ( Array.isArray( styles ) || typeof styles == 'string' ) {
 		normalizedConfig.listTypes = toArray( styles );
 	}
-	else {
-		normalizedConfig.listTypes = styles.listTypes ?
-			toArray( styles.listTypes ) :
-			normalizedConfig.listTypes;
+        else {
+                normalizedConfig.listTypes = styles.listTypes ?
+                        toArray( styles.listTypes ) :
+                        normalizedConfig.listTypes;
 
-		normalizedConfig.useAttribute = !!styles.useAttribute;
+                normalizedConfig.useAttribute = !!styles.useAttribute;
 
-		if ( styles.listStyleTypes ) {
-			normalizedConfig.listStyleTypes = styles.listStyleTypes;
-		}
-	}
+                if ( styles.styleTypes ) {
+                        normalizedConfig.styleTypes = toArray( styles.styleTypes );
+                }
+                else if ( styles.listStyleTypes ) {
+                        normalizedConfig.listStyleTypes = styles.listStyleTypes;
+                }
+        }
 
 	return normalizedConfig;
 }
@@ -90,14 +93,15 @@ function getNormalizedStylesConfig( styles: ListPropertiesConfig[ 'styles' ] ): 
 * @internal
 */
 export type NormalizedListPropertiesConfig = {
-	styles: {
-		listTypes: Array<ListPropertiesStyleListType>;
-		listStyleTypes?: {
-			numbered?: Array<string>;
-			bulleted?: Array<string>;
-		};
-		useAttribute: boolean;
-	};
-	startIndex: boolean;
-	reversed: boolean;
+        styles: {
+                listTypes: Array<ListPropertiesStyleListType>;
+                styleTypes?: Array<string>;
+                listStyleTypes?: {
+                        numbered?: Array<string>;
+                        bulleted?: Array<string>;
+                };
+                useAttribute: boolean;
+        };
+        startIndex: boolean;
+        reversed: boolean;
 };
