@@ -256,8 +256,8 @@ describe( 'ListPropertiesUI', () => {
 					} );
 				} );
 
-				describe( 'listStyleTypes config entry', () => {
-					it( 'should register buttons filtered by listStyleTypes for bulleted list', () => {
+                                describe( 'listStyleTypes config entry', () => {
+                                        it( 'should register buttons filtered by listStyleTypes for bulleted list', () => {
 						return withEditor( {
 							styles: {
 								listStyleTypes: {
@@ -339,9 +339,9 @@ describe( 'ListPropertiesUI', () => {
 
 							numberedListDropdown.element.remove();
 						} );
-					} );
+                                        } );
 
-					it( 'should register no buttons when listStyleTypes has empty array', () => {
+                                        it( 'should register no buttons when listStyleTypes has empty array', () => {
 						return withEditor( {
 							styles: {
 								listStyleTypes: {
@@ -365,9 +365,59 @@ describe( 'ListPropertiesUI', () => {
 							expect( listPropertiesView.stylesView ).to.be.null;
 
 							numberedListDropdown.element.remove();
-						} );
-					} );
-				} );
+                                                } );
+                                        } );
+                                } );
+
+                                describe( 'styleTypes config entry', () => {
+                                        it( 'should register buttons filtered by styleTypes for bulleted list', () => {
+                                                return withEditor( {
+                                                        styles: {
+                                                                styleTypes: [ 'disc', 'circle' ]
+                                                        }
+                                                }, editor => {
+                                                        const componentFactory = editor.ui.componentFactory;
+                                                        const bulletedListDropdown = componentFactory.create( 'bulletedList' );
+
+                                                        bulletedListDropdown.render();
+                                                        document.body.appendChild( bulletedListDropdown.element );
+
+                                                        bulletedListDropdown.isOpen = true;
+                                                        bulletedListDropdown.isOpen = false;
+
+                                                        const listPropertiesView = bulletedListDropdown.panelView.children.first;
+                                                        const stylesView = listPropertiesView.stylesView;
+
+                                                        expect( stylesView.children.map( b => b.tooltip ) ).to.deep.equal( [ 'Disc', 'Circle' ] );
+
+                                                        bulletedListDropdown.element.remove();
+                                                } );
+                                        } );
+
+                                        it( 'should register buttons filtered by styleTypes for numbered list', () => {
+                                                return withEditor( {
+                                                        styles: {
+                                                                styleTypes: [ 'decimal', 'lower-roman' ]
+                                                        }
+                                                }, editor => {
+                                                        const componentFactory = editor.ui.componentFactory;
+                                                        const numberedListDropdown = componentFactory.create( 'numberedList' );
+
+                                                        numberedListDropdown.render();
+                                                        document.body.appendChild( numberedListDropdown.element );
+
+                                                        numberedListDropdown.isOpen = true;
+                                                        numberedListDropdown.isOpen = false;
+
+                                                        const listPropertiesView = numberedListDropdown.panelView.children.first;
+                                                        const stylesView = listPropertiesView.stylesView;
+
+                                                        expect( stylesView.children.map( b => b.tooltip ) ).to.deep.equal( [ 'Decimal', 'Lower–roman' ] );
+
+                                                        numberedListDropdown.element.remove();
+                                                } );
+                                        } );
+                                } );
 			} );
 
 			describe( 'bulleted list dropdown', () => {
@@ -1271,7 +1321,7 @@ describe( 'ListPropertiesUI', () => {
 						} );
 					} );
 
-					it( 'should register no buttons when listStyleTypes has empty array in menu bar', () => {
+                                        it( 'should register no buttons when listStyleTypes has empty array in menu bar', () => {
 						return withEditor( {
 							styles: {
 								listStyleTypes: {
@@ -1295,9 +1345,59 @@ describe( 'ListPropertiesUI', () => {
 							expect( listPropertiesView.stylesView ).to.be.null;
 
 							numberedListMenu.element.remove();
-						} );
-					} );
-				} );
+                                                } );
+                                        } );
+                                } );
+
+                                describe( 'styleTypes config entry', () => {
+                                        it( 'should register buttons filtered by styleTypes for bulleted list in menu bar', () => {
+                                                return withEditor( {
+                                                        styles: {
+                                                                styleTypes: [ 'disc', 'circle' ]
+                                                        }
+                                                }, editor => {
+                                                        const componentFactory = editor.ui.componentFactory;
+                                                        const bulletedListMenu = componentFactory.create( 'menuBar:bulletedList' );
+
+                                                        bulletedListMenu.render();
+                                                        document.body.appendChild( bulletedListMenu.element );
+
+                                                        bulletedListMenu.isOpen = true;
+                                                        bulletedListMenu.isOpen = false;
+
+                                                        const listPropertiesView = bulletedListMenu.panelView.children.first;
+                                                        const stylesView = listPropertiesView.stylesView;
+
+                                                        expect( stylesView.children.map( b => b.tooltip ) ).to.deep.equal( [ 'Disc', 'Circle' ] );
+
+                                                        bulletedListMenu.element.remove();
+                                                } );
+                                        } );
+
+                                        it( 'should register buttons filtered by styleTypes for numbered list in menu bar', () => {
+                                                return withEditor( {
+                                                        styles: {
+                                                                styleTypes: [ 'decimal', 'lower-roman' ]
+                                                        }
+                                                }, editor => {
+                                                        const componentFactory = editor.ui.componentFactory;
+                                                        const numberedListMenu = componentFactory.create( 'menuBar:numberedList' );
+
+                                                        numberedListMenu.render();
+                                                        document.body.appendChild( numberedListMenu.element );
+
+                                                        numberedListMenu.isOpen = true;
+                                                        numberedListMenu.isOpen = false;
+
+                                                        const listPropertiesView = numberedListMenu.panelView.children.first;
+                                                        const stylesView = listPropertiesView.stylesView;
+
+                                                        expect( stylesView.children.map( b => b.tooltip ) ).to.deep.equal( [ 'Decimal', 'Lower–roman' ] );
+
+                                                        numberedListMenu.element.remove();
+                                                } );
+                                        } );
+                                } );
 			} );
 
 			describe( 'bulleted list menu', () => {

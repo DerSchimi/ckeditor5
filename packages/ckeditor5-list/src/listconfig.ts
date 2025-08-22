@@ -180,12 +180,36 @@ export interface ListPropertiesStyleConfig {
 	 * {@link module:list/listproperties~ListProperties list properties}.
 	 *
 	 * @default false
-	 */
-	useAttribute?: boolean;
+        */
+        useAttribute?: boolean;
 
-	/**
-	 * Defines which list styles should be available in the UI.
-	 * Accepts a configuration object with numbered and bulleted styles.
+        /**
+        * Defines which list style types should be available in the UI.
+        * Accepts an array of style names that will be enabled for both bulleted and numbered lists.
+        *
+        * ```ts
+        * {
+        *   list: {
+        *     properties: {
+        *       styles: {
+        *         styleTypes: [ 'disc', 'decimal' ]
+        *       }
+        *     }
+        *   }
+        * }
+        * ```
+        *
+        * **Note**: If {@link ~ListPropertiesStyleConfig#listTypes `listTypes`} are configured, the resulting
+        * available styles will be additionally limited to the enabled list types.
+        *
+        * **Note**: This configuration works only with
+        * {@link module:list/listproperties~ListProperties list properties}.
+        */
+        styleTypes?: ArrayOrItem<string>;
+
+        /**
+         * Defines which list styles should be available in the UI.
+         * Accepts a configuration object with numbered and bulleted styles.
 	 *
 	 * ```ts
 	 * {
@@ -231,7 +255,7 @@ export interface ListPropertiesStyleConfig {
 	 *   bulleted: [ 'disc', 'circle', 'square' ]
 	 * }`
 	 */
-	listStyleTypes?: ListStyleTypesConfig;
+        listStyleTypes?: ListStyleTypesConfig;
 }
 
 export interface ListStyleTypesConfig {

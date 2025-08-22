@@ -273,7 +273,9 @@ function createAttributeStrategies( enabledProperties: ListPropertiesConfig ) {
 	const normalizedConfig = getNormalizedConfig( enabledProperties );
 
 	if ( enabledProperties.styles ) {
-		const useAttribute = normalizedConfig.styles.useAttribute;
+                const useAttribute = normalizedConfig.styles.useAttribute;
+                const configuredStyleTypes = normalizedConfig.styles.listStyleTypes;
+                const flatStyleTypes = normalizedConfig.styles.styleTypes;
 
 		strategies.push( {
 			attributeName: 'listStyle',
@@ -281,14 +283,28 @@ function createAttributeStrategies( enabledProperties: ListPropertiesConfig ) {
 			viewConsumables: { styles: 'list-style-type' },
 
 			addCommand( editor ) {
-				let supportedTypes = getAllSupportedStyleTypes();
+                                let supportedTypes = getAllSupportedStyleTypes();
 
-				if ( useAttribute ) {
-					supportedTypes = supportedTypes.filter( styleType => !!getTypeAttributeFromListStyleType( styleType ) );
-				}
+                                if ( useAttribute ) {
+                                        supportedTypes = supportedTypes.filter( styleType => !!getTypeAttributeFromListStyleType( styleType ) );
+                                }
 
-				editor.commands.add( 'listStyle', new ListStyleCommand( editor, DEFAULT_LIST_TYPE, supportedTypes ) );
-			},
+                                if ( configuredStyleTypes ) {
+                                        const allowed = new Set( [
+                                                ...( configuredStyleTypes.numbered || [] ),
+                                                ...( configuredStyleTypes.bulleted || [] )
+                                        ] );
+
+                                        supportedTypes = supportedTypes.filter( styleType => allowed.has( styleType ) );
+                                }
+                                else if ( flatStyleTypes ) {
+                                        const allowed = new Set( flatStyleTypes );
+
+                                        supportedTypes = supportedTypes.filter( styleType => allowed.has( styleType ) );
+                                }
+
+                                editor.commands.add( 'listStyle', new ListStyleCommand( editor, DEFAULT_LIST_TYPE, supportedTypes ) );
+                        },
 
 			appliesToListItem( item ) {
 				return item.getAttribute( 'listType' ) == 'numbered' || item.getAttribute( 'listType' ) == 'bulleted';
